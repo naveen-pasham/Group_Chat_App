@@ -11,7 +11,11 @@ const app = express();
 
 const userRoutes = require('./routes/signup');
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:2000",
+  methods: ["GET","POST","PUT","DELETE"],
+  credentials: true
+}));
 app.use(bodyParser.json({ extended: false }));
 
 app.use('/user', userRoutes);

@@ -18,12 +18,14 @@
       password,
       number
     }
-   const userdata=await axios.get(`http://localhost:2000/user/getusers/${email}`);
+   const userdata=await axios.get(`http://localhost:2000/user/getusers/${email}`,{credentials:"include"});
    if(userdata.data===null){
-      const registerdata=await axios.post('http://localhost:2000/user/signup',obj)
-      usesrstatus.innerText=registerdata.data.message;
+      const registerdata=await axios.post('http://localhost:2000/user/signup',obj,{credentials:"include"})
+     // usesrstatus.innerText=registerdata.data.message;
+     alert("Successfuly signed up")
    }else{
-    usesrstatus.innerText='User already exists'
+   // usesrstatus.innerText='User already exists'
+   alert("User already exists, Please Login")
    }
 
     }
