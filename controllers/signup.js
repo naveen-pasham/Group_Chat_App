@@ -1,5 +1,6 @@
 
 const User = require('../models/signup');
+const jwt = require('jsonwebtoken');
 const bcrypt=require('bcrypt');
 
 exports.AddUser = async(req, res) => {
@@ -23,7 +24,9 @@ catch(err){
 }
 
 };
-
+function generateAccessToken(id) {
+  return jwt.sign(id, process.env.TOKEN_SECRET);
+}
 
 exports.getuser=(req,res,next)=>{
   const email=req.params.useremail
@@ -31,3 +34,35 @@ exports.getuser=(req,res,next)=>{
     res.json(user);
   }).catch(err=>console.log(err))
 };
+
+
+
+exports.checkuser=async (req,res,next)=>{
+  try{
+  const email=req.body.email;
+  const password= req.body.password;
+  const user=await User.findOne({where:{email:email}});
+    if(user){
+      bcrypt.compare(password,user.password,(err,re)=>{
+        if(!err){
+          if(re){
+          return res.json({success:true,message:"User Login Sucessfully!!",token:generateAccessToken(user.id)});
+          }
+        else{
+            return res.status(401).json({success:false,message:'User not authorized'});
+        }
+      }
+      
+      });
+    }
+  else{
+    return res.status(404).json({message:"User not found"});
+    }
+  
+  }
+  catch(err){
+   console.log(err)
+  }
+}
+
+
