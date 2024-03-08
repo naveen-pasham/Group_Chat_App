@@ -18,7 +18,11 @@ document.getElementById('login').addEventListener('click',()=>{
   
      const logindata=await axios.post('http://localhost:2000/user/login',obj);
        usesrstatus.innerText=logindata.data.message;
-      
+       if(logindata.data.message==="User Login Sucessfully!!"){
+        localStorage.setItem('token', logindata.data.token);
+        localStorage.setItem('name', logindata.data.name);
+      window.location.href = "../Chat/chat.html" 
+    }
     }
     catch(error){
       console.log(error)
