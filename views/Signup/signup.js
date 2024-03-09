@@ -18,10 +18,11 @@
       password,
       number
     }
-   const userdata=await axios.get(`http://localhost:2000/user/getusers/${email}`,{credentials:"include"});
+   const userdata=await axios.get(`http://localhost:2000/user/getusers/${email}`,{method:'get',credentials:"include"});
    if(userdata.data===null){
       const registerdata=await axios.post('http://localhost:2000/user/signup',obj,{credentials:"include"})
      // usesrstatus.innerText=registerdata.data.message;
+     resetform();
      alert("Successfuly signed up")
    }else{
    // usesrstatus.innerText='User already exists'
@@ -32,4 +33,11 @@
     catch(error){
       console.log(error);
     }
+  }
+
+  function resetform(){
+    document.getElementById('username').value=''
+    document.getElementById('number').value=''
+    document.getElementById('email').value=''
+    document.getElementById('password').value=''
   }

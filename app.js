@@ -4,6 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors=require('cors');
 const dotenv = require('dotenv');
+const sequelize = require('./util/database');
 
 dotenv.config();
 
@@ -12,8 +13,8 @@ const app = express();
 const userRoutes = require('./routes/signup');
 
 app.use(cors({
-  origin: "http://localhost:2000",
-  methods: ["GET","POST","PUT","DELETE"],
+  origin: "*",
+  methods: ["POST","PUT","DELETE"],
   credentials: true
 }));
 app.use(bodyParser.json({ extended: false }));
