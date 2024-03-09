@@ -12,7 +12,7 @@ exports.AddMessage = async(req, res) => {
     message:message,
     userId:req.user.id
   });
-   return  res.status(201).json({message:"Succesfully added data", chat:[chatdata]});
+   return  res.status(201).json({message:"Succesfully added data", chat:chatdata});
 }
 catch(err){
  res.status(500).json(err);
@@ -22,7 +22,8 @@ catch(err){
 
 
 exports.getmessages=(req,res,next)=>{
-  Message.findAll().then(user=>{
-    res.json(user);
+    const messageid=req.params.messageid
+  Message.findAll({where:{id:messageid}}).then(message=>{
+    res.json(message);
   }).catch(err=>console.log(err))
 };

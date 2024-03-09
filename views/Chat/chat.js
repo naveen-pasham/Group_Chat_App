@@ -10,7 +10,12 @@ document.getElementById('chat').addEventListener('click',()=>{
   const token=localStorage.getItem('token');
   const name=localStorage.getItem('nextuser');
   let messagesdata=JSON.parse(localStorage.getItem('messages'));
-  document.getElementById('nextuser').innerHTML=`${name} Joined`
+  document.getElementById('nextuser').innerHTML=`${name} Joined`;
+  if(messagesdata.length===0 || messagesdata==='undefined'){
+    messages=[];
+  }else{
+    messages=messagesdata;
+  }
    // add messages 
    async function chat(event) {
       try{
@@ -24,11 +29,13 @@ document.getElementById('chat').addEventListener('click',()=>{
        const chatdata=await axios.post('http://localhost:2000/chat/message',obj,{ headers: { "Authorization": token } });
       // let usermessage={id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username};
        messages.push({id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username});
-       if(messages.length>10){
-        messages.shift();
+       if(messages.length<11){
+          localStorage.setItem('messages',JSON.stringify(messages));
+          showmessageonscreen([messages[messages.length-1]])
+       }else{
+          messages.shift();
+          localStorage.setItem('messages',JSON.stringify(messages));
        }
-       localStorage.setItem('messages',JSON.stringify(messages));
-       showmessageonscreen(messages)
         resetform();
     }
 
@@ -54,6 +61,7 @@ document.getElementById('chat').addEventListener('click',()=>{
         // const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
         // console.log(messages);
         // localStorage.setItem('length',messages.data.length);
+        //console.log(messages[messages.length-1]);
         if(messagesdata.length>0){
           showmessageonscreen(messagesdata);
         }
@@ -73,11 +81,14 @@ document.getElementById('chat').addEventListener('click',()=>{
       //     showmessageonscreen([messages.data[length]]);
       //     localStorage.setItem('length',messages.data.length);
       //   }
-
-
-      if(messagesdata.length>0){
-        showmessageonscreen(messagesdata);
+      const id=messagesdata[messagesdata.length-1].id+1;
+      const newmessages=await axios.get(`http://localhost:2000/chat/getmessages/${id}`,{ headers: { "Authorization": token } })
+     // console.log(newmessages)
+      if(newmessages.data.length===1){
+        showmessageonscreen(newmessages.data);
       }
+      messagesdata= JSON.parse(localStorage.getItem('messages'));
+       
       }catch(error){
         console.log(error);
       }
