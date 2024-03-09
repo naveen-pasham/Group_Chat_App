@@ -30,10 +30,8 @@ document.getElementById('chat').addEventListener('click',()=>{
 
     function showmessageonscreen(data){
         let ulbody=document.getElementById('listmessages');
-        console.log(ulbody)
         data.forEach(message => {
             list='<li>'+message.username+':'+message.message+'</li>'
-            console.log(list)
             ulbody.insertAdjacentHTML('beforeend', list);
         });
     }
@@ -46,9 +44,25 @@ document.getElementById('chat').addEventListener('click',()=>{
       try{
         const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
         console.log(messages);
+        localStorage.setItem('length',messages.data.length);
         showmessageonscreen(messages.data)
       }
       catch(error){
         console.log(error)
       }
     })
+
+  setInterval(async() => {
+    try{
+      const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
+        //console.log(messages);
+        const length=localStorage.getItem('length');
+        if(messages.data.length>length){
+         // console.log(messages.data[length])
+          showmessageonscreen([messages.data[length]]);
+          localStorage.setItem('length',messages.data.length);
+        }
+      }catch(error){
+        console.log(error);
+      }
+  }, 1000);
