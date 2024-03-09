@@ -4,9 +4,12 @@
 document.getElementById('chat').addEventListener('click',()=>{
     chat(event);
   })
+
+  let messages=[];
   
   const token=localStorage.getItem('token');
   const name=localStorage.getItem('nextuser');
+  let messagesdata=JSON.parse(localStorage.getItem('messages'));
   document.getElementById('nextuser').innerHTML=`${name} Joined`
    // add messages 
    async function chat(event) {
@@ -19,7 +22,13 @@ document.getElementById('chat').addEventListener('click',()=>{
       }
     
        const chatdata=await axios.post('http://localhost:2000/chat/message',obj,{ headers: { "Authorization": token } });
-       showmessageonscreen(chatdata.data.chat)
+      // let usermessage={id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username};
+       messages.push({id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username});
+       if(messages.length>10){
+        messages.shift();
+       }
+       localStorage.setItem('messages',JSON.stringify(messages));
+       showmessageonscreen(messages)
         resetform();
     }
 
@@ -42,10 +51,12 @@ document.getElementById('chat').addEventListener('click',()=>{
 
     window.addEventListener('DOMContentLoaded',async()=>{
       try{
-        const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
-        console.log(messages);
-        localStorage.setItem('length',messages.data.length);
-        showmessageonscreen(messages.data)
+        // const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
+        // console.log(messages);
+        // localStorage.setItem('length',messages.data.length);
+        if(messagesdata.length>0){
+          showmessageonscreen(messagesdata);
+        }
       }
       catch(error){
         console.log(error)
@@ -54,14 +65,19 @@ document.getElementById('chat').addEventListener('click',()=>{
 
   setInterval(async() => {
     try{
-      const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
-        //console.log(messages);
-        const length=localStorage.getItem('length');
-        if(messages.data.length>length){
-         // console.log(messages.data[length])
-          showmessageonscreen([messages.data[length]]);
-          localStorage.setItem('length',messages.data.length);
-        }
+      // const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
+      //   //console.log(messages);
+      //   const length=localStorage.getItem('length');
+      //   if(messages.data.length>length){
+      //    // console.log(messages.data[length])
+      //     showmessageonscreen([messages.data[length]]);
+      //     localStorage.setItem('length',messages.data.length);
+      //   }
+
+
+      if(messagesdata.length>0){
+        showmessageonscreen(messagesdata);
+      }
       }catch(error){
         console.log(error);
       }
