@@ -1,9 +1,13 @@
+
+
  
 document.getElementById('chat').addEventListener('click',()=>{
     chat(event);
   })
   
   const token=localStorage.getItem('token');
+  const name=localStorage.getItem('nextuser');
+  document.getElementById('nextuser').innerHTML=`${name} Joined`
    // add messages 
    async function chat(event) {
       try{
@@ -15,8 +19,8 @@ document.getElementById('chat').addEventListener('click',()=>{
       }
     
        const chatdata=await axios.post('http://localhost:2000/chat/message',obj,{ headers: { "Authorization": token } });
-      //  showmessageonscreen(chatdata.data)
-    
+       showmessageonscreen(chatdata.data.chat)
+        resetform();
     }
 
      catch(error){
@@ -24,12 +28,27 @@ document.getElementById('chat').addEventListener('click',()=>{
       }
     }
 
-    // function showmessageonscreen(data){
-    //     let ulbody=document.getElementById('listmessages')[0];
-    //     const name=localStorage.getItem('name');
-    //     let list='<li>You Joined</li><li>'+name+'Joined</li>'
-    //     data.forEach(message => {
-    //         list='<li>'+message.name+':'+message.message+'</li>'
-    //     });
-    //     ulbody.insertAdjacentHTML('beforeend', list);
-    // }
+    function showmessageonscreen(data){
+        let ulbody=document.getElementById('listmessages');
+        console.log(ulbody)
+        data.forEach(message => {
+            list='<li>'+message.username+':'+message.message+'</li>'
+            console.log(list)
+            ulbody.insertAdjacentHTML('beforeend', list);
+        });
+    }
+
+    function resetform(){
+      document.getElementById('message').value=''
+    }
+
+    window.addEventListener('DOMContentLoaded',async()=>{
+      try{
+        const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
+        console.log(messages);
+        showmessageonscreen(messages.data)
+      }
+      catch(error){
+        console.log(error)
+      }
+    })

@@ -1,4 +1,4 @@
-const path = require('path');
+
 
 const Message = require('../models/message');
 
@@ -12,10 +12,17 @@ exports.AddMessage = async(req, res) => {
     message:message,
     userId:req.user.id
   });
-   return  res.status(201).json({message:"Succesfully added data", chat:chatdata});
+   return  res.status(201).json({message:"Succesfully added data", chat:[chatdata]});
 }
 catch(err){
  res.status(500).json(err);
 }
 
+};
+
+
+exports.getmessages=(req,res,next)=>{
+  Message.findAll().then(user=>{
+    res.json(user);
+  }).catch(err=>console.log(err))
 };

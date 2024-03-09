@@ -46,7 +46,7 @@ exports.checkuser=async (req,res,next)=>{
       bcrypt.compare(password,user.password,(err,re)=>{
         if(!err){
           if(re){
-          return res.json({success:true,message:"User Login Sucessfully!!",token:generateAccessToken(user.id)});
+          return res.json({success:true,message:"User Login Sucessfully!!",token:generateAccessToken(user.id),username:user.username});
           }
         else{
             return res.status(401).json({success:false,message:'User not authorized'});
