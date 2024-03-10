@@ -7,4 +7,4 @@ router.post('/post/data',groupController.groupAdd);
 router.get('/get/data/:id',groupController.getGroup);
 
 
-module.exports=router;
+module.exports=router; 

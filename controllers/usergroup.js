@@ -18,7 +18,7 @@ exports.getUserGroups=async (req,res,next)=>{
         console.log(err);
 
     }
-}
+} 
 
 
 exports.addUserGroup = async (req,res,next)=>{

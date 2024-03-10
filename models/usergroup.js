@@ -8,4 +8,4 @@ const userGroup =sequelize.define('usergroups',{
         primaryKey:true
     }
 });
-module.exports=userGroup;
+module.exports=userGroup; 

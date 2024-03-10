@@ -18,4 +18,4 @@ router.get('/delete/:userid',groupController.deleteUserData)
 
 
 
-module.exports=router;
+module.exports=router; 

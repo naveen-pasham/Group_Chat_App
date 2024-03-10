@@ -7,6 +7,8 @@ const dotenv = require('dotenv');
 const sequelize = require('./util/database');
 const User = require('./models/signup');
 const Message = require('./models/message');
+const group=require('./models/group');
+const userGroup=require('./models/usergroup');
 
 dotenv.config();
 
@@ -27,6 +29,13 @@ app.use('/chat', messageRoutes);
 
 User.hasMany(Message);
 Message.belongsTo(User);
+
+
+group.hasMany(Message,{constraints:true,onDelete:'CASCADE'});
+Message.belongsTo(group);
+
+User.belongsToMany(group,{through:userGroup,constraints:true,onDelete:'CASCADE'});
+group.belongsToMany(User,{through:userGroup,constraints:true,onDelete:'CASCADE'});
 
 sequelize
 // .sync({alter: true})
