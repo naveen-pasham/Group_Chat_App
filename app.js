@@ -9,7 +9,7 @@ const User = require('./models/signup');
 const Message = require('./models/message');
 const group=require('./models/group');
 const userGroup=require('./models/usergroup');
-
+const userAdmins=require('./models/groupAdmin');
 
 dotenv.config();
 
@@ -19,6 +19,7 @@ const userRoutes = require('./routes/signup');
 const messageRoutes = require('./routes/message');
 const groupRoutes=require('./routes/group');
 const userGroupesRoutes=require('./routes/usergroup');
+const admingroupRoutes=require('./routes/groupAdmin');
 
 app.use(cors({
   origin: "*",
@@ -31,6 +32,7 @@ app.use('/user', userRoutes);
 app.use('/chat', messageRoutes);
 app.use('/group',groupRoutes);
 app.use('/usergroups',userGroupesRoutes);
+app.use('/admin',admingroupRoutes);
 
 
 User.hasMany(Message);
@@ -42,6 +44,10 @@ Message.belongsTo(group);
 
 User.belongsToMany(group,{through:userGroup,constraints:true,onDelete:'CASCADE'});
 group.belongsToMany(User,{through:userGroup,constraints:true,onDelete:'CASCADE'});
+
+
+User.belongsToMany(group,{through:userAdmins,constraints:true,onDelete:'CASCADE'});
+group.belongsToMany(User,{through:userAdmins,constraints:true,onDelete:'CASCADE'});
 
 sequelize
 // .sync({alter: true})

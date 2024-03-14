@@ -2,6 +2,7 @@
 const User=require('../models/signup');
 const Group=require('../models/group');
 const userGroup=require('../models/usergroup');
+const groupAdmin=require('../models/groupAdmin');
 
 
 exports.groupAdd= async (req,res,next)=>{
@@ -25,7 +26,13 @@ exports.groupAdd= async (req,res,next)=>{
         members:JSON.stringify(options)
 
      });
-console.log(group);
+
+     const admin=await groupAdmin.create({
+        groupId:group.dataValues.id,
+        userId:req.user.id
+     })
+
+        //console.log(group);
         options.forEach(Option => {
             userGroup.create({
                 userId:Option,
@@ -48,7 +55,7 @@ console.log(group);
         
         
     //  }
-     res.send({message:'sucess',groupdata:group});}
+     res.send({message:'sucess',groupdata:group,admin:admin});}
      catch(err){
         console.log(err);
         res.send({message:'failure'});

@@ -1,6 +1,7 @@
 
 
 const Message = require('../models/message');
+const groupAdmin=require('../models/groupAdmin');
 
 
 exports.AddMessage = async(req, res) => {
@@ -23,9 +24,14 @@ catch(err){
 };
 
 
-exports.getmessages=(req,res,next)=>{
+exports.getmessages= async (req,res,next)=>{
+  try{
     const groupid=req.params.groupid
-  Message.findAll({where:{groupId:groupid}}).then(message=>{
-    res.json(message);
-  }).catch(err=>console.log(err))
+ const message=await Message.findAll({where:{groupId:groupid}})
+ const admin=await groupAdmin.findAll({where:{groupId:groupid}});
+    res.json({message,admin});
+}
+catch(err){
+  console.log(err);
+}
 };

@@ -1,5 +1,6 @@
 
 
+
  
 document.getElementById('chat').addEventListener('click',()=>{
     chat(event);
@@ -101,6 +102,7 @@ document.getElementById('chat').addEventListener('click',()=>{
 const token=localStorage.getItem('token');
 const groupid=localStorage.getItem('groupid');
 const username=localStorage.getItem('name');
+let admin=JSON.parse(localStorage.getItem('admin'));
 let selectedOptions=[]
 
 document.getElementById('logout').addEventListener('click',()=>{
@@ -232,8 +234,16 @@ function showuseronscreen(data){
   document.getElementById('listgroupusers').getElementsByTagName('tbody')[0].innerHTML=''
     let tableBody =  document.getElementById('listgroupusers').getElementsByTagName('tbody')[0];
     data.forEach(user => {
-        let row = '<tr><td hidden>'+user.id+'</td><td>' + user.username + '</td><td hidden></td></tr>';
-        tableBody.insertAdjacentHTML('beforeend', row);
+      admin.forEach(useradmin=>{
+        if(useradmin.userId===user.id){
+          document.getElementById('addmembers').innerHTML='Add Members';
+          let row = '<tr><td hidden>'+user.id+'</td><td>' + user.username + '</td><td> Admin</td></tr>';
+          tableBody.insertAdjacentHTML('beforeend', row);
+        }else{
+          let row = '<tr><td hidden>'+user.id+'</td><td>' + user.username + '</td><td><button type="button" class="btn btn-sm btn-success" onclick="makeadmin(this.parentNode.parentNode)">Make Admin</button><button type="button" class="btn btn-sm btn-danger" onclick="removeuser(this.parentNode.parentNode)">Remove</button></td></tr>';
+          tableBody.insertAdjacentHTML('beforeend', row);
+        }
+      })
     });
 }
 
@@ -253,12 +263,15 @@ async function showdata(row){
   document.getElementById('groupcarddata').style.display = "block";
   const id= row.cells[0].innerHTML;
   const messages=await axios.get(`http://localhost:2000/chat/getmessages/${id}`,{ headers: { "Authorization": token } })
- showmessageonscreen(messages.data);
+  console.log(messages)
+  localStorage.setItem('admin',JSON.stringify(messages.data.admin));
+ showmessageonscreen(messages.data.message);
+ 
   localStorage.setItem('groupid',id);
   const name=row.cells[1].innerHTML;
   document.getElementById('groupdata').innerHTML='';
     const groupname=document.getElementById('groupdata');
-    console.log(groupname)
+   // console.log(groupname)
     const data=`<div class="row"> <div class="col-md-8 mx-auto" onclick="showgroupusers(${id})"><h3  data-toggle="modal" data-target="#groupinfo">${name}</h3></div><div class="col-md-4 mx-auto"><button type="button" class="btn btn-sm btn-danger" onclick="removegroup(${id})">Exit Group</button></div></div>`;
  groupname.insertAdjacentHTML('beforeend',data);
 }
@@ -269,15 +282,22 @@ function removegroup(id){
 }
 
 async function showgroupusers(id){
-  document.getElementById('namegroup').innerHTML=`${id}`;
+  // document.getElementById('namegroup').innerHTML=`${id}`;
  const groupinfodata=await axios.get(`http://localhost:2000/group/data/${id}`,{ headers: { "Authorization": token } }) 
  document.getElementById('namegroup').innerHTML=groupinfodata.data.group.name;
- console.log(groupinfodata)
+ //console.log(groupinfodata)
  showuseronscreen(groupinfodata.data.userdata)
 }
 
+async function makeadmin(row){
+  const id=row.cells[0].innerHTML;
+  axios.post(`http://localhost:2000/admin/makeadmin`,{groupid:groupid,userid:id})
 
-
+}
+async function removeuser(row){
+  const id=row.cells[0].innerHTML;
+  axios.post(`http://localhost:2000/usergroups/deleteuser`,{groupid:groupid,userid:id}) 
+}
 
 
 

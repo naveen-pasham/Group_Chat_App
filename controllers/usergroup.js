@@ -44,12 +44,23 @@ exports.addUserGroup = async (req,res,next)=>{
 }
 
 
-exports.getUserData=async (req,res,next)=>{
+exports.deleteuser=async (req,res,next)=>{
     try{
 
-        const grId=req.params.gid;
-        const users=await userGroup.findAll({where:{groupId:grId}});
-        res.send(users);
+        const groupId=req.body.groupid;
+        const userid=req.body.userid;
+        await userGroup.destroy({where:{groupId:groupId,userId:userid}})
+        const group=   await Group.findOne({where:{id:groupId}});
+        let members=JSON.parse(group.members)
+        let index=await members.indexOf(userid);
+        if (index > -1) { 
+            members.splice(index, 1); 
+          }
+          await group.update({members:members});
+    console.log(members)
+       // await userGroup.destroy({where:{userId:userID}});
+        res.send({message:'success'});
+      
     }
     
     catch(err){
