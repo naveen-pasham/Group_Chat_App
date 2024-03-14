@@ -24,6 +24,9 @@
      // usesrstatus.innerText=registerdata.data.message;
      resetform();
      alert("Successfuly signed up")
+     if(registerdata.data.message==="Succesfully Created New User"){
+      window.location.href = "../Login/login.html" 
+  }
    }else{
    // usesrstatus.innerText='User already exists'
    alert("User already exists, Please Login")

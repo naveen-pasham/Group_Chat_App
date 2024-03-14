@@ -1,17 +1,27 @@
 const userGroup=require('../models/usergroup');
-const User=require('../models/user');
+const User=require('../models/signup');
 const Group=require('../models/group');
-
+const Sequelize = require('sequelize');
 
 
 
 exports.getUserGroups=async (req,res,next)=>{
     try{ 
-    console.log(req.user.id);
+
+        let groups=[]
         const usergroups=await userGroup.findAll({where:{userId:req.user.id}});
         
-        console.log(usergroups);
-        res.send(usergroups);
+       for(let user of usergroups){
+           await Group.findOne({where:{id:user.groupId}}).then(group=>{
+            let obj= {id:group.id,name:group.name}
+          //  console.log(obj)
+            groups.push(obj);
+           })
+       
+        };
+        
+       // console.log(groups)
+        res.send(groups);
         
     }
     catch(err){
@@ -52,8 +62,17 @@ exports.getUserData=async (req,res,next)=>{
 
 exports.deleteUserData=async (req,res,next)=>{
     try{
-        const userID=req.params.userid;
-    await userGroup.destroy({where:{userId:userID}});
+        const groupId=req.params.groupid;
+      await userGroup.destroy({where:{groupId:groupId,userId:req.user.id}})
+    const group=   await Group.findOne({where:{id:groupId}});
+    let members=JSON.parse(group.members)
+    let index=await members.indexOf(req.user.id);
+    if (index > -1) { 
+        members.splice(index, 1); 
+      }
+      await group.update({members:members});
+console.log(members)
+   // await userGroup.destroy({where:{userId:userID}});
     res.send({message:'success'});
 
     }

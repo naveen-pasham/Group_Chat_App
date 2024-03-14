@@ -10,12 +10,15 @@ const Message = require('./models/message');
 const group=require('./models/group');
 const userGroup=require('./models/usergroup');
 
+
 dotenv.config();
 
 const app = express();
 
 const userRoutes = require('./routes/signup');
 const messageRoutes = require('./routes/message');
+const groupRoutes=require('./routes/group');
+const userGroupesRoutes=require('./routes/usergroup');
 
 app.use(cors({
   origin: "*",
@@ -26,6 +29,9 @@ app.use(bodyParser.json({ extended: false }));
 
 app.use('/user', userRoutes);
 app.use('/chat', messageRoutes);
+app.use('/group',groupRoutes);
+app.use('/usergroups',userGroupesRoutes);
+
 
 User.hasMany(Message);
 Message.belongsTo(User);

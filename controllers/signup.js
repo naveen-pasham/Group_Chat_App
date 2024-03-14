@@ -2,7 +2,7 @@
 const User = require('../models/signup');
 const jwt = require('jsonwebtoken');
 const bcrypt=require('bcrypt');
-
+const Sequelize = require('sequelize');
 exports.AddUser = async(req, res) => {
   try{
   const username=req.body.name;
@@ -31,6 +31,16 @@ function generateAccessToken(id) {
 exports.getuser=(req,res,next)=>{
   const email=req.params.useremail
   User.findOne({where :{email:email}}).then(user=>{
+    res.json(user);
+  }).catch(err=>console.log(err))
+};
+
+
+
+exports.getusers=(req,res,next)=>{
+  User.findAll({where: {
+    id: { [Sequelize.Op.not]: req.user.id },
+  }}).then(user=>{
     res.json(user);
   }).catch(err=>console.log(err))
 };

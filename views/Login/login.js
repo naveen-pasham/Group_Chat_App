@@ -20,10 +20,9 @@ document.getElementById('login').addEventListener('click',()=>{
        usesrstatus.innerText=logindata.data.message;
        console.log(logindata);
        if(logindata.data.message==="User Login Sucessfully!!"){
-        const nextuser=localStorage.getItem('name');
-        localStorage.setItem('nextuser', nextuser);
         localStorage.setItem('token', logindata.data.token);
         localStorage.setItem('name', logindata.data.username);
+       // window.location.href = "../Dashboard/dashboard.html" 
         window.location.href = "../Chat/chat.html" 
     }
     }

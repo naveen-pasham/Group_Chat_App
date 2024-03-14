@@ -1,0 +1,97 @@
+body{
+  background-color: #dee2e6;
+}
+
+.section{
+    background-color: #1ca133; /* Blue color for the top part */
+    padding: 20px;
+    color: #fff;
+    font-family: sans-serif;
+    text-align: center;
+}
+
+.padding-0{
+    padding-right:0;
+    padding-left:0;
+}
+
+
+
+#logout{
+    margin-left: 90%;
+ }
+ #textalign{
+    margin-left: 50%;
+ }
+ #group{
+    margin-left: 70%;
+    display: flex;
+     justify-content: flex-end;
+     margin-right: 5%;
+ }
+ #members{
+   max-width: 100%;
+   width: 350px;
+   
+ }
+ td:hover {
+    background-color: #b9c5d2;
+    cursor: pointer;
+}
+
+#groupinfo{
+    position: relative;
+    margin-left: 20%;
+}
+#namegroup{
+   
+    display: block;
+  }
+  .modal-header{
+    background-color: #b9c5d2;
+
+  }
+  #groupdata{
+    background-color: #9dd1f1;
+    cursor: pointer;
+  }
+
+  #groupcarddata{
+    display: none;
+  }
+  ul{
+    list-style-type: none;
+  }
+  
+.left-msg{
+    margin-right: 0 ;
+    background-color: #eaedef;
+    width: 30%;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+  
+.right-msg{
+    margin-left: 70%;
+    background-color: #dac3ad;
+    width: 30%;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+.msg-bubble{
+    margin-left: 5px ;
+    margin-right: 5px ;
+}
+.msg-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+  }
+  .msg-info-name {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  .msg-info-time {
+    font-size: 0.85em;
+  }

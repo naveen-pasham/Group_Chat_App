@@ -12,7 +12,7 @@ const Group =sequelize.define('groups',{
         allowNull:false
     },
     members:{
-        type:Sequelize.STRING,
+        type:Sequelize.JSON,
         allowNull:false,
         unique:false
     }
