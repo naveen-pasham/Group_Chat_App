@@ -2,6 +2,7 @@ const userGroup=require('../models/usergroup');
 const User=require('../models/signup');
 const Group=require('../models/group');
 const Sequelize = require('sequelize');
+const groupAdmin=require('../models/groupAdmin');
 
 
 
@@ -31,11 +32,15 @@ exports.getUserGroups=async (req,res,next)=>{
 } 
 
 
-exports.addUserGroup = async (req,res,next)=>{
+exports.getgroup = async (req,res,next)=>{
     try{ 
-        
-        await userGroup.create({userId:req.body.userId,groupId:req.body.groupId});
-    res.send({message:'sucess'});
+        const groupid=req.params.groupid;
+     const usergroups=   await userGroup.findAll({where:{groupId:groupid}});
+      const users=  await User.findAll();
+// console.log(usergroups);
+// console.log(users)
+
+    res.send({usergroups,users,userid:req.user.id});
 }
     catch(err){
         console.log(err);
@@ -44,21 +49,49 @@ exports.addUserGroup = async (req,res,next)=>{
 }
 
 
+
+exports.searcheddata = async (req,res,next)=>{
+    try{ 
+        const groupid=req.query.groupid;
+        const search=req.query.search;
+     const usergroups=   await userGroup.findAll({where:{groupId:groupid}});
+      const users=  await User.findAll({ where: {
+        [Sequelize.Op.or]: [
+         { username: { [Sequelize.Op.like]: `%${search}%` } },
+         { phonenumber: { [Sequelize.Op.like]: `%${search}%` } },
+         { email: { [Sequelize.Op.like]: `%${search}%` } },
+        ],
+       }});
+// console.log(usergroups);
+ console.log(users)
+
+    res.send({usergroups,users,userid:req.user.id});
+}
+    catch(err){
+        console.log(err);
+    }
+   
+}
+
 exports.deleteuser=async (req,res,next)=>{
     try{
 
-        const groupId=req.body.groupid;
-        const userid=req.body.userid;
+        const groupId=req.query.groupid;
+        const userid=req.query.userid;
+        console.log(groupId,userid)
         await userGroup.destroy({where:{groupId:groupId,userId:userid}})
         const group=   await Group.findOne({where:{id:groupId}});
         let members=JSON.parse(group.members)
+        console.log(members)
         let index=await members.indexOf(userid);
-        if (index > -1) { 
-            members.splice(index, 1); 
-          }
-          await group.update({members:members});
-    console.log(members)
-       // await userGroup.destroy({where:{userId:userID}});
+        
+           await members.splice(index, 1); 
+        
+          console.log(members)
+          await group.update({members:JSON.stringify(members)});
+
+   // console.log(members)
+      await groupAdmin.destroy({where:{userId:userid,groupId:groupId}});
         res.send({message:'success'});
       
     }
@@ -81,7 +114,7 @@ exports.deleteUserData=async (req,res,next)=>{
     if (index > -1) { 
         members.splice(index, 1); 
       }
-      await group.update({members:members});
+      await group.update({members:JSON.stringify(members)});
 console.log(members)
    // await userGroup.destroy({where:{userId:userID}});
     res.send({message:'success'});

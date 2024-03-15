@@ -1,5 +1,5 @@
 
-
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors=require('cors');
@@ -10,6 +10,11 @@ const Message = require('./models/message');
 const group=require('./models/group');
 const userGroup=require('./models/usergroup');
 const userAdmins=require('./models/groupAdmin');
+const Forgotpassword = require('./models/forgotpassword');
+const fs=require('fs');
+const helmet=require('helmet');
+const Compression=require('compression');
+const morgan=require('morgan');
 
 dotenv.config();
 
@@ -20,6 +25,19 @@ const messageRoutes = require('./routes/message');
 const groupRoutes=require('./routes/group');
 const userGroupesRoutes=require('./routes/usergroup');
 const admingroupRoutes=require('./routes/groupAdmin');
+const forgotpasswordRoutes=require('./routes/forgotpassword');
+
+
+app.use(helmet({contentSecurityPolicy:false}));
+app.use(Compression());
+
+const accessLogStream=fs.createWriteStream(
+ path.join(__dirname,'access.log'),
+ {flags:'a'}
+);
+
+app.use(morgan('combined',{stream:accessLogStream}));
+
 
 app.use(cors({
   origin: "*",
@@ -33,7 +51,7 @@ app.use('/chat', messageRoutes);
 app.use('/group',groupRoutes);
 app.use('/usergroups',userGroupesRoutes);
 app.use('/admin',admingroupRoutes);
-
+app.use('/password',forgotpasswordRoutes);
 
 User.hasMany(Message);
 Message.belongsTo(User);
@@ -48,6 +66,10 @@ group.belongsToMany(User,{through:userGroup,constraints:true,onDelete:'CASCADE'}
 
 User.belongsToMany(group,{through:userAdmins,constraints:true,onDelete:'CASCADE'});
 group.belongsToMany(User,{through:userAdmins,constraints:true,onDelete:'CASCADE'});
+
+
+User.hasMany(Forgotpassword);
+Forgotpassword.belongsTo(User);
 
 sequelize
 // .sync({alter: true})

@@ -34,14 +34,20 @@ body{
    width: 350px;
    
  }
- td:hover {
+ #groupshow:hover {
     background-color: #b9c5d2;
     cursor: pointer;
 }
 
 #groupinfo{
-    position: relative;
-    margin-left: 20%;
+    position: fixed;
+    margin-left: 30%;
+    margin-top: 10%;
+}
+#addmemberstogroup{
+  position: fixed;
+    margin-right: 20%;
+    margin-top: 8%;
 }
 #namegroup{
    
@@ -62,6 +68,7 @@ body{
   ul{
     list-style-type: none;
   }
+ 
   
 .left-msg{
     margin-right: 0 ;
@@ -95,3 +102,8 @@ body{
   .msg-info-time {
     font-size: 0.85em;
   }
+#searchicon{
+  width: 50px;
+  height: 35px;
+  border-radius: 5px;
+}

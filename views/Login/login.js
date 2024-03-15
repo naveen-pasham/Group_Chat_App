@@ -35,3 +35,7 @@ document.getElementById('login').addEventListener('click',()=>{
   document.getElementById('signup').addEventListener('click',()=>{
     window.location.href = "../Signup/signup.html" 
   })
+
+  document.getElementById('forgot').addEventListener('click',()=>{
+    window.location.href = "../ForgotPassword/forgotpassword.html" 
+  })

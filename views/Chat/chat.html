@@ -108,7 +108,8 @@
                              <div class="modal-body">
 
                               <h3 id="namegroup"></h3>
-                              <h3 id="addmembers"></h3>
+                              <h5 id="addmembers"></h5>
+
                               <table class="table table-striped table-bordered" id="listgroupusers">
                                  <thead>
                                   <tr>
@@ -127,7 +128,51 @@
                            </div>
                            </div>
    
-   
+                           <div class="modal fade" id="addmemberstogroup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="false">
+                            <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Add Members</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <form>
+                                  <div class="form-group">
+                                   <div class="row">
+                                    <div class="col-md-10">
+                                      <input type="search" class="form-control"  id="search" placeholder="Search Members">
+                                    </div>
+                                    <div class="col-md-2">
+                                      <button id="searchicon" type="button" class="bt btn-primary padding-0">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                      </svg>
+                                      </button>
+                                    </div></div>
+                                    
+                                     
+                                    </div>
+                                  <div class="form-group">
+                                <label for="members">Select Members</label>
+                                <table class="table table-striped table-bordered" id="groupmembers">
+                                  <thead>
+                                   <tr>
+                                    <th hidden>user id</th>   
+                                    <th hidden>username</th>
+                                   </tr>
+                                  </thead>
+                                  <tbody></tbody>
+                                  <tfoot><tr><td hidden></td><td style="background-color:#e9ecef;"><button style="margin-left: 80%;" type="button" id="adduserstogroup" data-dismiss="modal" aria-label="Close" class="btn btn-primary">Add</button></td></tr></tfoot>
+                                 </table>
+                                </div>
+                                </form>
+                              </div>
+                            </div>
+                            </div>
+                          </div>
+            </div>
 
             <div class="card-footer">
                <form>
@@ -142,7 +187,7 @@
 </div></div></div>
    
    
-   </div>
+   
      
    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>

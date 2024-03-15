@@ -60,28 +60,58 @@ exports.groupAdd= async (req,res,next)=>{
         console.log(err);
         res.send({message:'failure'});
      }
-    
-
-
-
-
-
-
-    
-
-    
+   
 }
+
+
+exports.updategroup= async (req,res,next)=>{
+    try{
+        let userdata=[]
+        const groupid=req.body.groupid;
+        let options=req.body.selectedOptions;
+
+        const group= await Group.findOne({where:{id:groupid}});
+        let members=await JSON.parse(group.members);
+      //  console.log(members)
+        for(let userid of options){
+             members.push(userid);
+        }
+        await group.update({members:JSON.stringify(members)});
+      //  console.log(members)
+      options.forEach(Option => {
+        userGroup.create({
+            userId:Option,
+            groupId:groupid
+        })
+    });
+
+    for(let userid of members){
+        await User.findOne({where:{id:userid}}).then(user=>{
+       
+         userdata.push(user);
+        // console.log(userdata)
+        })
+    }
+
+    res.json(userdata)
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
 exports.getGroup= async (req,res,next)=>{
     try{
         let userdata=[]
         const id=req.params.groupid;
       
         const group= await Group.findOne({where:{id:id}});
+       
        // console.log(group)
-       let members=JSON.parse(group.members);
+       let members=await JSON.parse(group.members);
      
-       for(let id of members){
-        await User.findOne({where:{id:id}}).then(user=>{
+      for(let userid of members){
+        await User.findOne({where:{id:userid}}).then(user=>{
        
          userdata.push(user);
         // console.log(userdata)
@@ -89,8 +119,10 @@ exports.getGroup= async (req,res,next)=>{
     
      };
      
+     const admin=await groupAdmin.findAll({where:{groupId:id}});
+     
     
-     res.send({userdata,group});
+     res.json({userdata,group,admin,userid:req.user.id});
     }
     catch(err){
         console.log(err);

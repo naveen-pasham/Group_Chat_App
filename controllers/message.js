@@ -28,8 +28,8 @@ exports.getmessages= async (req,res,next)=>{
   try{
     const groupid=req.params.groupid
  const message=await Message.findAll({where:{groupId:groupid}})
- const admin=await groupAdmin.findAll({where:{groupId:groupid}});
-    res.json({message,admin});
+ //const admin=await groupAdmin.findAll({where:{groupId:groupid}});
+    res.json({message});
 }
 catch(err){
   console.log(err);

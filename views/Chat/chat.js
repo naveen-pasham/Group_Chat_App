@@ -100,9 +100,7 @@ document.getElementById('chat').addEventListener('click',()=>{
 
 
 const token=localStorage.getItem('token');
-const groupid=localStorage.getItem('groupid');
 const username=localStorage.getItem('name');
-let admin=JSON.parse(localStorage.getItem('admin'));
 let selectedOptions=[]
 
 document.getElementById('logout').addEventListener('click',()=>{
@@ -119,6 +117,7 @@ document.getElementById('creategroup').addEventListener('click',()=>{
    async function chat(event) {
       try{
       event.preventDefault();
+      const groupid=localStorage.getItem('groupid');
       const message=  document.getElementById('message').value;
      
       const obj={
@@ -221,7 +220,8 @@ window.addEventListener('DOMContentLoaded', async()=>{
         // console.log(userdata);
         // showuseronscreen(userdata.data);
         const groupdata=await axios.get('http://localhost:2000/usergroups/getgroups',{ headers: { "Authorization": token } });
-        console.log(groupdata);
+       // console.log(groupdata);
+       
         showgrouponscreen(groupdata.data);
     }
     catch(error){
@@ -230,28 +230,120 @@ window.addEventListener('DOMContentLoaded', async()=>{
 })
 
 
-function showuseronscreen(data){
-  document.getElementById('listgroupusers').getElementsByTagName('tbody')[0].innerHTML=''
+// function showuseronscreen(data){
+//   document.getElementById('listgroupusers').getElementsByTagName('tbody')[0].innerHTML=''
+//     let tableBody =  document.getElementById('listgroupusers').getElementsByTagName('tbody')[0];
+//     data.forEach(user => {
+//       admin.forEach(useradmin=>{
+//         if(useradmin.userId===user.id){
+//           document.getElementById('addmembers').innerHTML='Add Members';
+//           let row = '<tr><td hidden>'+user.id+'</td><td>' + user.username + '</td><td> Admin</td></tr>';
+//           tableBody.insertAdjacentHTML('beforeend', row);
+//         }else{
+//           let row = '<tr><td hidden>'+user.id+'</td><td>' + user.username + '</td><td><button type="button" class="btn btn-sm btn-success" onclick="makeadmin(this.parentNode.parentNode)">Make Admin</button><button type="button" class="btn btn-sm btn-danger" onclick="removeuser(this.parentNode.parentNode)">Remove</button></td></tr>';
+//           tableBody.insertAdjacentHTML('beforeend', row);
+//         }
+//       })
+//     });
+// }
+
+
+
+
+function showuseronscreen(data,admin,userid){
+  document.getElementById('addmembers').innerHTML='';
+  document.getElementById('listgroupusers').getElementsByTagName('tbody')[0].innerHTML='';
     let tableBody =  document.getElementById('listgroupusers').getElementsByTagName('tbody')[0];
-    data.forEach(user => {
-      admin.forEach(useradmin=>{
-        if(useradmin.userId===user.id){
-          document.getElementById('addmembers').innerHTML='Add Members';
-          let row = '<tr><td hidden>'+user.id+'</td><td>' + user.username + '</td><td> Admin</td></tr>';
+   const length=admin.length;
+    admin.forEach((useradmin,index)=>{
+     // console.log(useradmin)
+      if(useradmin.userId==userid){
+        admin.splice(index, 1);
+        document.getElementById('addmembers').innerHTML=`<div  data-toggle="modal" data-target="#addmemberstogroup" onclick="addmembers()" style=' cursor: pointer;background-color:#c8dccb;'><svg  style='color:green' xmlns="http://www.w3.org/2000/svg" width="80" height="35" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+        <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+        <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5"/>
+      </svg>Add Members</div>`;
+      }
+    })
+
+    if(admin.length<length){
+      data.forEach((user,index) => {
+        if(user.id==userid){
+          let row = '<tr><td hidden>'+user.id+'</td><td>You</td><td> Admin</td></tr>';
           tableBody.insertAdjacentHTML('beforeend', row);
-        }else{
-          let row = '<tr><td hidden>'+user.id+'</td><td>' + user.username + '</td><td><button type="button" class="btn btn-sm btn-success" onclick="makeadmin(this.parentNode.parentNode)">Make Admin</button><button type="button" class="btn btn-sm btn-danger" onclick="removeuser(this.parentNode.parentNode)">Remove</button></td></tr>';
-          tableBody.insertAdjacentHTML('beforeend', row);
+         
+          data.splice(index, 1);
         }
-      })
+      });
+     // console.log(data)
+      if(admin.length>0){
+      admin.forEach(useradmin=>{
+        data.forEach((user,index) => {
+         if(user.id==useradmin.userId){
+          let row = '<tr><td hidden>'+user.id+'</td><td>'+user.username+'</td><td><button type="button" class="btn btn-sm btn-danger" onclick="removeuser(this.parentNode.parentNode)">Remove</button> Admin</td></tr>';
+          tableBody.insertAdjacentHTML('beforeend', row);
+          data.splice(index, 1);
+        }
+      });
     });
+  }
+    data.forEach(user => {
+      let row = '<tr><td hidden>'+user.id+'</td><td>' + user.username + '</td><td><button type="button" class="btn btn-sm btn-success" onclick="makeadmin(this.parentNode.parentNode)">Make Admin</button><button type="button" class="btn btn-sm btn-danger" onclick="removeuser(this.parentNode.parentNode)">Remove</button></td></tr>';
+      tableBody.insertAdjacentHTML('beforeend', row);
+    });
+
+    }else{
+      data.forEach((user,index) => {
+        if(user.id==userid){
+          let row = '<tr><td hidden>'+user.id+'</td><td>You</td><td hidden> </td></tr>';
+          tableBody.insertAdjacentHTML('beforeend', row);
+          data.splice(index, 1);
+        }
+      });
+      if(admin.length>0){
+      admin.forEach(useradmin=>{
+        data.forEach((user,index) => {
+         if(user.id==useradmin.userId){
+          let row = '<tr><td hidden>'+user.id+'</td><td>'+user.username+'</td><td> Admin</td></tr>';
+          tableBody.insertAdjacentHTML('beforeend', row);
+          data.splice(index, 1);
+        }
+      });
+    });
+  }
+    data.forEach(user => {
+      let row = '<tr><td hidden>'+user.id+'</td><td>' + user.username + '</td><td hidden></td></tr>';
+      tableBody.insertAdjacentHTML('beforeend', row);
+    });
+    }
+    
+    //   if(useradmin.userId===userid){
+    //     data.forEach(user => {
+    //   }
+
+    // })
+
+
+    // data.forEach(user => {
+    //   admin.forEach(useradmin=>{
+    //     if(useradmin.userId===user.id){
+    //       document.getElementById('addmembers').innerHTML='Add Members';
+    //       let row = '<tr><td hidden>'+user.id+'</td><td>' + user.username + '</td><td> Admin</td></tr>';
+    //       tableBody.insertAdjacentHTML('beforeend', row);
+    //     }else{
+    //       let row = '<tr><td hidden>'+user.id+'</td><td>' + user.username + '</td><td><button type="button" class="btn btn-sm btn-success" onclick="makeadmin(this.parentNode.parentNode)">Make Admin</button><button type="button" class="btn btn-sm btn-danger" onclick="removeuser(this.parentNode.parentNode)">Remove</button></td></tr>';
+    //       tableBody.insertAdjacentHTML('beforeend', row);
+    //     }
+    //   })
+    // });
 }
+
 
 
 function showgrouponscreen(data){
     let tableBody =  document.getElementById('listgroups').getElementsByTagName('tbody')[0];
     data.forEach(group => {
-        let row = '<tr><td hidden>'+group.id+'</td><td onclick="showdata(this.parentNode)">' + group.name +'</td></tr>';
+        let row = '<tr><td hidden>'+group.id+'</td><td id="groupshow" onclick="showdata(this.parentNode)">' + group.name +'</td></tr>';
         tableBody.insertAdjacentHTML('beforeend', row);
     });
 }
@@ -263,11 +355,13 @@ async function showdata(row){
   document.getElementById('groupcarddata').style.display = "block";
   const id= row.cells[0].innerHTML;
   const messages=await axios.get(`http://localhost:2000/chat/getmessages/${id}`,{ headers: { "Authorization": token } })
-  console.log(messages)
-  localStorage.setItem('admin',JSON.stringify(messages.data.admin));
+ // console.log(messages)
+ 
  showmessageonscreen(messages.data.message);
  
   localStorage.setItem('groupid',id);
+  
+
   const name=row.cells[1].innerHTML;
   document.getElementById('groupdata').innerHTML='';
     const groupname=document.getElementById('groupdata');
@@ -278,33 +372,143 @@ async function showdata(row){
 
 function removegroup(id){
 
-  axios.get(`http://localhost:2000/usergroups/deletegroup/${id}`,{ headers: { "Authorization": token } }) 
+  axios.get(`http://localhost:2000/usergroups/deletegroup/${id}`,{ headers: { "Authorization": token } });
 }
 
 async function showgroupusers(id){
   // document.getElementById('namegroup').innerHTML=`${id}`;
+  localStorage.removeItem('memberstogroup')
  const groupinfodata=await axios.get(`http://localhost:2000/group/data/${id}`,{ headers: { "Authorization": token } }) 
  document.getElementById('namegroup').innerHTML=groupinfodata.data.group.name;
- //console.log(groupinfodata)
- showuseronscreen(groupinfodata.data.userdata)
+// console.log(groupinfodata)
+ showuseronscreen(groupinfodata.data.userdata,groupinfodata.data.admin,groupinfodata.data.userid)
 }
 
 async function makeadmin(row){
+  const groupid=localStorage.getItem('groupid');
   const id=row.cells[0].innerHTML;
   axios.post(`http://localhost:2000/admin/makeadmin`,{groupid:groupid,userid:id})
-
+  row.cells[2].innerHTML='<button type="button" class="btn btn-sm btn-danger" onclick="removeuser(this.parentNode.parentNode)">Remove</button>Admin';
 }
 async function removeuser(row){
+  row.parentNode.removeChild(row);
+  const groupid=localStorage.getItem('groupid');
   const id=row.cells[0].innerHTML;
-  axios.post(`http://localhost:2000/usergroups/deleteuser`,{groupid:groupid,userid:id}) 
+  console.log(id)
+  axios.get(`http://localhost:2000/usergroups/deleteuser?groupid=${groupid}&userid=${id}`) 
+}
+
+async function addmembers(){
+  localStorage.removeItem('search');
+  let memberstogroup=JSON.parse(localStorage.getItem('memberstogroup'));
+  if(memberstogroup==null){
+    selectedOptions=[]
+  }else if(memberstogroup.length>0){
+    selectedOptions=memberstogroup;
+  }
+  
+  document.getElementById('groupmembers').getElementsByTagName('tbody')[0].innerHTML='';
+  const groupid=localStorage.getItem('groupid');
+  let addmemberstogroup=document.getElementById('groupmembers').getElementsByTagName('tbody')[0];
+  const usergroup= await axios.get(`http://localhost:2000/usergroups/getgroup/${groupid}`,{ headers: { "Authorization": token } });
+  console.log(usergroup)
+ await usergroup.data.users.forEach((user,index)=>{
+    if(user.id==usergroup.data.userid){
+          usergroup.data.users.splice(index, 1);
+    }
+  });
+ 
+    await  usergroup.data.usergroups.forEach((groupuser)=>{
+        usergroup.data.users.forEach((user,index)=>{
+        if(user.id==groupuser.userId){
+          let list =`<tr><td hidden>${user.id}</td><td style=' cursor: pointer;'  onMouseOver="this.style.background='#007bff'"  onMouseOut="this.style.background=''"><input value="${user.id}" type="checkbox" checked>${user.username}</td></tr>`
+          addmemberstogroup.insertAdjacentHTML('beforeend', list);
+          usergroup.data.users.splice(index, 1);
+        }
+      });
+    });
+
+    await  usergroup.data.users.forEach((user,index)=>{
+      let list =`<tr><td hidden>${user.id}</td><td style=' cursor: pointer;'  onMouseOver="this.style.background='#007bff'"  onMouseOut="this.style.background=''" onclick="addmembertogroup(this.parentNode)"><input value="${user.id}" type="checkbox">${user.username}</td></tr>`
+      addmemberstogroup.insertAdjacentHTML('beforeend', list);
+       
+    });
+    
 }
 
 
+async function addmembertogroup(row){
+  console.log(row.cells[0].innerHTML)
+  selectedOptions.indexOf(parseInt(row.cells[0].innerHTML))===-1?selectedOptions.push(parseInt(row.cells[0].innerHTML)):console.log("This item already exists");
+  console.log('Selected options:', selectedOptions);
+  localStorage.setItem('memberstogroup',JSON.stringify(selectedOptions));
+
+}
+
+document.getElementById('adduserstogroup').addEventListener('click',async()=>{
+  const groupid=localStorage.getItem('groupid');
+  const obj={
+    groupid,
+    selectedOptions
+
+}
+    const createdgroup=await axios.post('http://localhost:2000/group/addmembers',obj,{ headers: { "Authorization": token } })
+    showgroupusers(groupid);
+})
+let myTimer
+let input = document.getElementById('search');
+input.addEventListener('focus',async()=>{
+  // input.focus();
+  // input.select();
+  try{
+ myTimer= setInterval(async() => {
+        
+          let searchitem=document.getElementById('search').value;
+          console.log(searchitem)
+          if(searchitem==''){
+              addmembers();
+             // window.clearInterval(myTimer)
+          }
+          if(searchitem!='' && searchitem!=localStorage.getItem('search')){
+            localStorage.setItem('search',searchitem);
+          document.getElementById('groupmembers').getElementsByTagName('tbody')[0].innerHTML='';
+          const groupid=localStorage.getItem('groupid');
+          let addmemberstogroup=document.getElementById('groupmembers').getElementsByTagName('tbody')[0];
+          const usergroup= await axios.get(`http://localhost:2000/usergroups/getsearchdata?groupid=${groupid}&search=${searchitem}`,{ headers: { "Authorization": token } });
+          console.log(usergroup)
+         await usergroup.data.users.forEach((user,index)=>{
+            if(user.id==usergroup.data.userid){
+                  usergroup.data.users.splice(index, 1);
+            }
+          });
+         
+            await  usergroup.data.usergroups.forEach((groupuser)=>{
+                usergroup.data.users.forEach((user,index)=>{
+                if(user.id==groupuser.userId){
+                  let list =`<tr><td hidden>${user.id}</td><td style=' cursor: pointer;'  onMouseOver="this.style.background='#007bff'"  onMouseOut="this.style.background=''"><input value="${user.id}" type="checkbox" checked>${user.username}</td></tr>`
+                  addmemberstogroup.insertAdjacentHTML('beforeend', list);
+                  usergroup.data.users.splice(index, 1);
+                }
+              });
+            });
+        
+            await  usergroup.data.users.forEach((user,index)=>{
+              let list =`<tr><td hidden>${user.id}</td><td style=' cursor: pointer;'  onMouseOver="this.style.background='#007bff'"  onMouseOut="this.style.background=''" onclick="addmembertogroup(this.parentNode)"><input value="${user.id}" type="checkbox">${user.username}</td></tr>`
+              addmemberstogroup.insertAdjacentHTML('beforeend', list);
+               
+            });        
+        }
+      },1000);
+    } catch(error){
+      console.log(error)
+    }
+
+});
 
 
-
-
-
+input.addEventListener('blur',async()=>{
+  window.clearInterval(myTimer)
+});
 
 document.getElementById('group').addEventListener('click',()=>{
     showmembers();
