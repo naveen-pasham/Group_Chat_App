@@ -53,6 +53,12 @@ app.use('/usergroups',userGroupesRoutes);
 app.use('/admin',admingroupRoutes);
 app.use('/password',forgotpasswordRoutes);
 
+
+app.use((req,res)=>{
+  console.log('url', req.url);
+  res.sendFile(path.join(__dirname, `views/${req.url}`))
+})
+
 User.hasMany(Message);
 Message.belongsTo(User);
 
