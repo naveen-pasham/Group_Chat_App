@@ -18,9 +18,9 @@
       password,
       number
     }
-   const userdata=await axios.get(`http://localhost:2000/user/getusers/${email}`,{method:'get',credentials:"include"});
+   const userdata=await axios.get(`http://54.196.61.25:2000/user/getusers/${email}`,{method:'get',credentials:"include"});
    if(userdata.data===null){
-      const registerdata=await axios.post('http://localhost:2000/user/signup',obj,{credentials:"include"})
+      const registerdata=await axios.post('http://54.196.61.25:2000/user/signup',obj,{credentials:"include"})
      // usesrstatus.innerText=registerdata.data.message;
      resetform();
      alert("Successfuly signed up")

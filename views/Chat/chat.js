@@ -27,7 +27,7 @@ document.getElementById('chat').addEventListener('click',()=>{
 //         message
 //       }
     
-//        const chatdata=await axios.post('http://localhost:2000/chat/message',obj,{ headers: { "Authorization": token } });
+//        const chatdata=await axios.post('http://54.196.61.25:2000/chat/message',obj,{ headers: { "Authorization": token } });
 //       // let usermessage={id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username};
 //        messages.push({id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username});
 //        if(messages.length<11){
@@ -59,7 +59,7 @@ document.getElementById('chat').addEventListener('click',()=>{
 
 //     window.addEventListener('DOMContentLoaded',async()=>{
 //       try{
-//         // const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
+//         // const messages=await axios.get('http://54.196.61.25:2000/chat/getmessages',{ headers: { "Authorization": token } })
 //         // console.log(messages);
 //         // localStorage.setItem('length',messages.data.length);
 //         //console.log(messages[messages.length-1]);
@@ -74,7 +74,7 @@ document.getElementById('chat').addEventListener('click',()=>{
 
 //   setInterval(async() => {
 //     try{
-//       // const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
+//       // const messages=await axios.get('http://54.196.61.25:2000/chat/getmessages',{ headers: { "Authorization": token } })
 //       //   //console.log(messages);
 //       //   const length=localStorage.getItem('length');
 //       //   if(messages.data.length>length){
@@ -83,7 +83,7 @@ document.getElementById('chat').addEventListener('click',()=>{
 //       //     localStorage.setItem('length',messages.data.length);
 //       //   }
 //       const id=messagesdata[messagesdata.length-1].id+1;
-//       const newmessages=await axios.get(`http://localhost:2000/chat/getmessages/${id}`,{ headers: { "Authorization": token } })
+//       const newmessages=await axios.get(`http://54.196.61.25:2000/chat/getmessages/${id}`,{ headers: { "Authorization": token } })
 //      // console.log(newmessages)
 //       if(newmessages.data.length===1){
 //         showmessageonscreen(newmessages.data);
@@ -125,7 +125,7 @@ document.getElementById('creategroup').addEventListener('click',()=>{
         groupid
       }
     
-       const chatdata=await axios.post('http://localhost:2000/chat/message',obj,{ headers: { "Authorization": token } });
+       const chatdata=await axios.post('http://54.196.61.25:2000/chat/message',obj,{ headers: { "Authorization": token } });
        console.log(chatdata)
       // let usermessage={id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username};
      //  messages.push({id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username});
@@ -202,7 +202,7 @@ async function creategroup(event){
         selectedOptions
 
     }
-        const createdgroup=await axios.post('http://localhost:2000/group/addgroup',obj,{ headers: { "Authorization": token } })
+        const createdgroup=await axios.post('http://54.196.61.25:2000/group/addgroup',obj,{ headers: { "Authorization": token } })
        
         showgrouponscreen([createdgroup.data.groupdata]);
       
@@ -216,10 +216,10 @@ async function creategroup(event){
 
 window.addEventListener('DOMContentLoaded', async()=>{
     try{
-        // const userdata=await axios.get('http://localhost:2000/user/getusers',{ headers: { "Authorization": token } });
+        // const userdata=await axios.get('http://54.196.61.25:2000/user/getusers',{ headers: { "Authorization": token } });
         // console.log(userdata);
         // showuseronscreen(userdata.data);
-        const groupdata=await axios.get('http://localhost:2000/usergroups/getgroups',{ headers: { "Authorization": token } });
+        const groupdata=await axios.get('http://54.196.61.25:2000/usergroups/getgroups',{ headers: { "Authorization": token } });
        // console.log(groupdata);
        
         showgrouponscreen(groupdata.data);
@@ -354,7 +354,7 @@ async function showdata(row){
   document.getElementById('listmessages').innerHTML=''
   document.getElementById('groupcarddata').style.display = "block";
   const id= row.cells[0].innerHTML;
-  const messages=await axios.get(`http://localhost:2000/chat/getmessages/${id}`,{ headers: { "Authorization": token } })
+  const messages=await axios.get(`http://54.196.61.25:2000/chat/getmessages/${id}`,{ headers: { "Authorization": token } })
  // console.log(messages)
  
  showmessageonscreen(messages.data.message);
@@ -372,13 +372,13 @@ async function showdata(row){
 
 function removegroup(id){
 
-  axios.get(`http://localhost:2000/usergroups/deletegroup/${id}`,{ headers: { "Authorization": token } });
+  axios.get(`http://54.196.61.25:2000/usergroups/deletegroup/${id}`,{ headers: { "Authorization": token } });
 }
 
 async function showgroupusers(id){
   // document.getElementById('namegroup').innerHTML=`${id}`;
   localStorage.removeItem('memberstogroup')
- const groupinfodata=await axios.get(`http://localhost:2000/group/data/${id}`,{ headers: { "Authorization": token } }) 
+ const groupinfodata=await axios.get(`http://54.196.61.25:2000/group/data/${id}`,{ headers: { "Authorization": token } }) 
  document.getElementById('namegroup').innerHTML=groupinfodata.data.group.name;
 // console.log(groupinfodata)
  showuseronscreen(groupinfodata.data.userdata,groupinfodata.data.admin,groupinfodata.data.userid)
@@ -387,7 +387,7 @@ async function showgroupusers(id){
 async function makeadmin(row){
   const groupid=localStorage.getItem('groupid');
   const id=row.cells[0].innerHTML;
-  axios.post(`http://localhost:2000/admin/makeadmin`,{groupid:groupid,userid:id})
+  axios.post(`http://54.196.61.25:2000/admin/makeadmin`,{groupid:groupid,userid:id})
   row.cells[2].innerHTML='<button type="button" class="btn btn-sm btn-danger" onclick="removeuser(this.parentNode.parentNode)">Remove</button>Admin';
 }
 async function removeuser(row){
@@ -395,7 +395,7 @@ async function removeuser(row){
   const groupid=localStorage.getItem('groupid');
   const id=row.cells[0].innerHTML;
   console.log(id)
-  axios.get(`http://localhost:2000/usergroups/deleteuser?groupid=${groupid}&userid=${id}`) 
+  axios.get(`http://54.196.61.25:2000/usergroups/deleteuser?groupid=${groupid}&userid=${id}`) 
 }
 
 async function addmembers(){
@@ -410,7 +410,7 @@ async function addmembers(){
   document.getElementById('groupmembers').getElementsByTagName('tbody')[0].innerHTML='';
   const groupid=localStorage.getItem('groupid');
   let addmemberstogroup=document.getElementById('groupmembers').getElementsByTagName('tbody')[0];
-  const usergroup= await axios.get(`http://localhost:2000/usergroups/getgroup/${groupid}`,{ headers: { "Authorization": token } });
+  const usergroup= await axios.get(`http://54.196.61.25:2000/usergroups/getgroup/${groupid}`,{ headers: { "Authorization": token } });
   console.log(usergroup)
  await usergroup.data.users.forEach((user,index)=>{
     if(user.id==usergroup.data.userid){
@@ -452,7 +452,7 @@ document.getElementById('adduserstogroup').addEventListener('click',async()=>{
     selectedOptions
 
 }
-    const createdgroup=await axios.post('http://localhost:2000/group/addmembers',obj,{ headers: { "Authorization": token } })
+    const createdgroup=await axios.post('http://54.196.61.25:2000/group/addmembers',obj,{ headers: { "Authorization": token } })
     showgroupusers(groupid);
 })
 let myTimer
@@ -474,7 +474,7 @@ input.addEventListener('focus',async()=>{
           document.getElementById('groupmembers').getElementsByTagName('tbody')[0].innerHTML='';
           const groupid=localStorage.getItem('groupid');
           let addmemberstogroup=document.getElementById('groupmembers').getElementsByTagName('tbody')[0];
-          const usergroup= await axios.get(`http://localhost:2000/usergroups/getsearchdata?groupid=${groupid}&search=${searchitem}`,{ headers: { "Authorization": token } });
+          const usergroup= await axios.get(`http://54.196.61.25:2000/usergroups/getsearchdata?groupid=${groupid}&search=${searchitem}`,{ headers: { "Authorization": token } });
           console.log(usergroup)
          await usergroup.data.users.forEach((user,index)=>{
             if(user.id==usergroup.data.userid){
@@ -518,7 +518,7 @@ async function showmembers(){
     document.getElementById('members').innerHTML='';
     let selectedbox=document.getElementById('members');
     console.log(selectedbox)
-    const userdata=await axios.get('http://localhost:2000/user/getusers',{ headers: { "Authorization": token } });
+    const userdata=await axios.get('http://54.196.61.25:2000/user/getusers',{ headers: { "Authorization": token } });
     userdata.data.forEach(user => {
       console.log(user);
         let option=`<option value="${user.id}">${user.username}</option>`

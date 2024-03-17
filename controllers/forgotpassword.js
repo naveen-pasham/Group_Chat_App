@@ -39,7 +39,7 @@ tranEmailApi.sendTransacEmail({
     to:receivers,
     subject:'Forgot Password',
     textContent:`Click on below link to reset password`,
-    htmlContent:`<a href='http://localhost:2000/password/resetpassword/${id}'>Reset password</a>`
+    htmlContent:`<a href='http://54.196.61.25:2000/password/resetpassword/${id}'>Reset password</a>`
 }).then(response=>console.log(response)).catch(err=>console.log(err))
 }else {
     throw new Error('User doesnt exist')

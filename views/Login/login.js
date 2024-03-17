@@ -16,7 +16,7 @@ document.getElementById('login').addEventListener('click',()=>{
       password
     }
   
-     const logindata=await axios.post('http://localhost:2000/user/login',obj);
+     const logindata=await axios.post('http://54.196.61.25:2000/user/login',obj);
        usesrstatus.innerText=logindata.data.message;
        console.log(logindata);
        if(logindata.data.message==="User Login Sucessfully!!"){

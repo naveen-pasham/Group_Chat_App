@@ -12,7 +12,7 @@ document.getElementById('forgot').addEventListener('click',()=>{
             email
         }
       
-         const forgotpassworduserdata=await axios.post('http://localhost:2000/password/forgotpassword',obj);
+         const forgotpassworduserdata=await axios.post('http://54.196.61.25:2000/password/forgotpassword',obj);
          console.log(forgotpassworduserdata);
         }
         catch(error){
