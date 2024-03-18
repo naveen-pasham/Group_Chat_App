@@ -1,6 +1,6 @@
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 
-const socket=io('http://localhost:2000')
+// const socket=io('http://localhost:2000')
 
  
 document.getElementById('chat').addEventListener('click',()=>{
@@ -120,9 +120,11 @@ document.getElementById('creategroup').addEventListener('click',()=>{
       event.preventDefault();
       const groupid=localStorage.getItem('groupid');
       const message=  document.getElementById('message').value;
+      const file=  document.getElementById('fileshare').value;
      
       const obj={
         message,
+        file,
         groupid
       }
     
@@ -137,11 +139,11 @@ document.getElementById('creategroup').addEventListener('click',()=>{
       //     messages.shift();
       //     localStorage.setItem('messages',JSON.stringify(messages));
       //  }
-    //  showmessageonscreen([chatdata.data.chat]);
+      showmessageonscreen([chatdata.data.chat]);
 
-      socket.on("connect",()=>{
-        showmessageonscreen([chatdata.data.chat]);
-      })
+      // socket.on("connect",()=>{
+      //   showmessageonscreen([chatdata.data.chat]);
+      // })
         resetform();
     }
 
