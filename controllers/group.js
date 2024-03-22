@@ -72,12 +72,12 @@ exports.updategroup= async (req,res,next)=>{
 
         const group= await Group.findOne({where:{id:groupid}});
         let members=await JSON.parse(group.members);
-      //  console.log(members)
+        console.log(members)
         for(let userid of options){
-             members.push(userid);
+            await members.push(userid);
         }
         await group.update({members:JSON.stringify(members)});
-      //  console.log(members)
+        console.log(members)
       options.forEach(Option => {
         userGroup.create({
             userId:Option,
