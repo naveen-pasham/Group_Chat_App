@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-const Message = sequelize.define('message', {
+const ArchivedChat = sequelize.define('archivedchat', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -25,6 +25,14 @@ const Message = sequelize.define('message', {
     type: Sequelize.STRING,
     allowNull: false
   },
+  userId: {
+    type: Sequelize.INTEGER,
+    allowNull: false
+  },
+  groupId: {
+    type: Sequelize.INTEGER,
+    allowNull: false
+  },
 });
 
-module.exports = Message;
+module.exports = ArchivedChat;

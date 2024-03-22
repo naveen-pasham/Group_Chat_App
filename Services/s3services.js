@@ -1,9 +1,8 @@
 const AWS=require('aws-sdk');
-const uploadToS3=(data,fileName)=>{
+const uploadToS3=(data,fileName,mimetype,ContentEncoding)=>{
     const BUCKET_NAME=process.env.BUCKET_NAME;
     const IAM_USER_KEY=process.env.IAM_USER_KEY;
     const  IAM_USER_SECRET=process.env.IAM_USER_SECRET;
-
     let s3bucket=new AWS.S3({
         accessKeyId:IAM_USER_KEY,
         secretAccessKey: IAM_USER_SECRET,
@@ -14,7 +13,9 @@ const uploadToS3=(data,fileName)=>{
         Bucket:BUCKET_NAME,
         Key:fileName,
         Body:data,
-        ACL:'public-read'
+        ACL:'public-read',
+        // ContentType:mimetype,
+        // ContentEncoding:'base64'
     }
     return new Promise((resolve,reject)=>{
         s3bucket.upload(params,(err,s3response)=>{

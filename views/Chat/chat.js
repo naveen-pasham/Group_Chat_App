@@ -1,11 +1,19 @@
 // import { io } from "socket.io-client";
 
-// const socket=io('http://localhost:2000')
 
+//import {FormData} from 'form-data';
+// const socket=io('http://54.196.61.25:2000')
+const socket = io('http://54.196.61.25:2000',{
+  withCredentials: true,
+  transports: ['websocket', 'polling', 'flashsocket']
+  // extraHeaders: {
+  //   'Access-Control-Allow-Origin': 'http://54.196.61.25:2000'
+  // }
+});
  
-document.getElementById('chat').addEventListener('click',()=>{
-    chat(event);
-  })
+// document.getElementById('chat').addEventListener('click',(event)=>{
+//     chat(event);
+//   })
 
 //   let messages=[];
   
@@ -28,7 +36,7 @@ document.getElementById('chat').addEventListener('click',()=>{
 //         message
 //       }
     
-//        const chatdata=await axios.post('http://localhost:2000/chat/message',obj,{ headers: { "Authorization": token } });
+//        const chatdata=await axios.post('http://54.196.61.25:2000/chat/message',obj,{ headers: { "Authorization": token } });
 //       // let usermessage={id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username};
 //        messages.push({id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username});
 //        if(messages.length<11){
@@ -60,7 +68,7 @@ document.getElementById('chat').addEventListener('click',()=>{
 
 //     window.addEventListener('DOMContentLoaded',async()=>{
 //       try{
-//         // const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
+//         // const messages=await axios.get('http://54.196.61.25:2000/chat/getmessages',{ headers: { "Authorization": token } })
 //         // console.log(messages);
 //         // localStorage.setItem('length',messages.data.length);
 //         //console.log(messages[messages.length-1]);
@@ -75,7 +83,7 @@ document.getElementById('chat').addEventListener('click',()=>{
 
 //   setInterval(async() => {
 //     try{
-//       // const messages=await axios.get('http://localhost:2000/chat/getmessages',{ headers: { "Authorization": token } })
+//       // const messages=await axios.get('http://54.196.61.25:2000/chat/getmessages',{ headers: { "Authorization": token } })
 //       //   //console.log(messages);
 //       //   const length=localStorage.getItem('length');
 //       //   if(messages.data.length>length){
@@ -84,7 +92,7 @@ document.getElementById('chat').addEventListener('click',()=>{
 //       //     localStorage.setItem('length',messages.data.length);
 //       //   }
 //       const id=messagesdata[messagesdata.length-1].id+1;
-//       const newmessages=await axios.get(`http://localhost:2000/chat/getmessages/${id}`,{ headers: { "Authorization": token } })
+//       const newmessages=await axios.get(`http://54.196.61.25:2000/chat/getmessages/${id}`,{ headers: { "Authorization": token } })
 //      // console.log(newmessages)
 //       if(newmessages.data.length===1){
 //         showmessageonscreen(newmessages.data);
@@ -112,24 +120,45 @@ document.getElementById('creategroup').addEventListener('click',()=>{
     creategroup(event);
 });
 
-
+const uploadForm = document.querySelector('.upload')
+uploadForm.addEventListener('submit', function(e) {
+  chat(e)
+})
     // add messages 
 
    async function chat(event) {
       try{
       event.preventDefault();
+  //     let file = event.target.fileshare.files[0];
+  //    let message= document.getElementById('message').value;
+  //     let formData = new FormData();
+  //     formData.append("file", file);
+  // //  formData.set('file', 'message')
+  //  formData.append('message', message)
+
+
       const groupid=localStorage.getItem('groupid');
-      const message=  document.getElementById('message').value;
-      const file=  document.getElementById('fileshare').value;
+     const message=  document.getElementById('message').value;
+     const file=  document.getElementById('fileshare').files[0];
      
       const obj={
         message,
-        file,
+      //   message:formData.get("message"),
+          file,
+      //  file:formData.get("fileshare"),
         groupid
       }
-    
-       const chatdata=await axios.post('http://localhost:2000/chat/message',obj,{ headers: { "Authorization": token } });
-       console.log(chatdata)
+     
+   // console.log(obj)
+      const chatdata=await axios({
+        method: 'post',
+        url: 'http://54.196.61.25:2000/chat/message',   //addyoururl
+        data: obj,
+        headers: {"Authorization": token ,
+        'Content-Type': 'multipart/form-data',
+        "Access-Control-Allow-Origin": "*" }
+        })//'http://54.196.61.25:2000/chat/message',{formData,groupid},{method: 'post'},{ headers: { "Authorization": token ,"Content-Type": "multipart/form-data"} });
+    //  console.log(chatdata)
       // let usermessage={id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username};
      //  messages.push({id:chatdata.data.chat.id,message:chatdata.data.chat.message,username:chatdata.data.chat.username});
      //  if(messages.length<11){
@@ -139,7 +168,9 @@ document.getElementById('creategroup').addEventListener('click',()=>{
       //     messages.shift();
       //     localStorage.setItem('messages',JSON.stringify(messages));
       //  }
-      showmessageonscreen([chatdata.data.chat]);
+
+      socket.emit("user-message", [chatdata.data.chat]);
+      //showmessageonscreen([chatdata.data.chat]);
 
       // socket.on("connect",()=>{
       //   showmessageonscreen([chatdata.data.chat]);
@@ -152,36 +183,179 @@ document.getElementById('creategroup').addEventListener('click',()=>{
       }
     }
 
+
+    socket.on("message", (message) => {
+     // console.log(message)
+      showmessageonscreen(message);
+    });
+
+
     function showmessageonscreen(data){
         let ulbody=document.getElementById('listmessages');
         data.forEach(message => {
           let date=new Date(message.createdAt)
+          let type=message.file.substring(message.file.lastIndexOf('.')+1, message.file.length) || message.file
         //  console.log(date.getHours()+':'+date.getMinutes())
           if(message.username===username){
-            list=`<li> <div class="right-msg">  <div class="msg-bubble">
-            <div class="msg-info">
-              <div class="msg-info-name">${message.username}</div>
-              <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
-            </div>
-    
-            <div class="msg-text">
-              ${message.message}
-            </div></div>
-        
-        </div></li>`
-            ulbody.insertAdjacentHTML('beforeend', list);
-          }else{
-            list=`<li><div class="left-msg">  <div class="msg-bubble">
-            <div class="msg-info">
-              <div class="msg-info-name">${message.username}</div>
-              <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
-            </div>
-    
-            <div class="msg-text">
-              ${message.message}
-            </div></div>
+            if(message.message!='' && message.file!=''){
+              if(type=='apng' || type=='bmp'|| type=='gif' || type=='jpeg' || type=='jpg' || type=='png' || type=='webp' || type=='svg'){
+                list=`<li> <div class="right-msg">  <div class="msg-bubble">
+                <div class="msg-info">
+                  <div class="msg-info-name">${message.username}</div>
+                  <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
+                </div>
+                <div class="msg-image">
+                <img src="E:/PROJECTS/Group_Chat_App/uploads/${message.file}" >
+              </div>
+                <div class="msg-text">
+                  ${message.message}
+                </div></div>
+            
+            </div></li>`
+                ulbody.insertAdjacentHTML('beforeend', list);
+              }else{
+                list=`<li> <div class="right-msg">  <div class="msg-bubble">
+                <div class="msg-info">
+                  <div class="msg-info-name">${message.username}</div>
+                  <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
+                </div>
+                <div class="msg-image">
+                ${message.file}
+              </div>
+                <div class="msg-text">
+                  ${message.message}
+                </div></div>
+            
+            </div></li>`
+                ulbody.insertAdjacentHTML('beforeend', list);
+              }
+
+            }else if(message.message=='' && message.file!=''){
+              if(type=='apng' || type=='bmp'|| type=='gif' || type=='jpeg' || type=='jpg' || type=='png' || type=='webp' || type=='svg'){
+                list=`<li> <div class="right-msg">  <div class="msg-bubble">
+                <div class="msg-info">
+                  <div class="msg-info-name">${message.username}</div>
+                  <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
+                </div>
+                <div class="msg-image">
+                <img src="E:/PROJECTS/Group_Chat_App/uploads/${message.file}" >
+              </div>
+                <div class="msg-text">
+                  ${message.message}
+                </div></div>
+            
+            </div></li>`
+                ulbody.insertAdjacentHTML('beforeend', list);
+              }else{
+                list=`<li> <div class="right-msg">  <div class="msg-bubble">
+                <div class="msg-info">
+                  <div class="msg-info-name">${message.username}</div>
+                  <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
+                </div>
+                
+                <div class="msg-text">
+                ${message.file}kkkk
+                </div></div>
+            
+            </div></li>`
+                ulbody.insertAdjacentHTML('beforeend', list);
+              }
+            }else{
+           // if(message.message!='' && message.file==''){
+              list=`<li> <div class="right-msg">  <div class="msg-bubble">
+              <div class="msg-info">
+                <div class="msg-info-name">${message.username}</div>
+                <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
+              </div>
+      
+              <div class="msg-text">
+                ${message.message}
+              </div></div>
+          
           </div></li>`
-            ulbody.insertAdjacentHTML('beforeend', list);
+              ulbody.insertAdjacentHTML('beforeend', list);
+            }
+
+          }else{
+            if(message.message!='' && message.file!=''){
+              if(type=='apng' || type=='bmp'|| type=='gif' || type=='jpeg' || type=='jpg' || type=='png' || type=='webp' || type=='svg'){
+                list=`<li> <div class="left-msg">  <div class="msg-bubble">
+                <div class="msg-info">
+                  <div class="msg-info-name">${message.username}</div>
+                  <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
+                </div>
+                <div class="msg-image">
+                <img src="E:/PROJECTS/Group_Chat_App/uploads/${message.file}" >
+              </div>
+                <div class="msg-text">
+                  ${message.message}
+                </div></div>
+            
+            </div></li>`
+                ulbody.insertAdjacentHTML('beforeend', list);
+              }else{
+                list=`<li> <div class="left-msg">  <div class="msg-bubble">
+                <div class="msg-info">
+                  <div class="msg-info-name">${message.username}</div>
+                  <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
+                </div>
+                <div class="msg-image">
+                ${message.file}
+              </div>
+                <div class="msg-text">
+                  ${message.message}
+                </div></div>
+            
+            </div></li>`
+                ulbody.insertAdjacentHTML('beforeend', list);
+              }
+
+            }else if(message.message=='' && message.file!=''){
+              if(type=='apng' || type=='bmp'|| type=='gif' || type=='jpeg' || type=='jpg' || type=='png' || type=='webp' || type=='svg'){
+                list=`<li> <div class="left-msg">  <div class="msg-bubble">
+                <div class="msg-info">
+                  <div class="msg-info-name">${message.username}</div>
+                  <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
+                </div>
+                <div class="msg-image">
+                <img src="E:/PROJECTS/Group_Chat_App/uploads/${message.file}" >
+              </div>
+                <div class="msg-text">
+                  ${message.message}
+                </div></div>
+            
+            </div></li>`
+                ulbody.insertAdjacentHTML('beforeend', list);
+              }else{
+                list=`<li> <div class="left-msg">  <div class="msg-bubble">
+                <div class="msg-info">
+                  <div class="msg-info-name">${message.username}</div>
+                  <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
+                </div>
+                <div class="msg-image">
+                ${message.file}
+              </div>
+                <div class="msg-text">
+                  ${message.message}
+                </div></div>
+            
+            </div></li>`
+                ulbody.insertAdjacentHTML('beforeend', list);
+              }
+            }else{
+              list=`<li> <div class="left-msg">  <div class="msg-bubble">
+              <div class="msg-info">
+                <div class="msg-info-name">${message.username}</div>
+                <div class="msg-info-time">${date.getHours()}:${date.getMinutes()}</div>
+              </div>
+      
+              <div class="msg-text">
+                ${message.message}
+              </div></div>
+          
+          </div></li>`
+              ulbody.insertAdjacentHTML('beforeend', list);
+            }
           }
         });
     }
@@ -209,7 +383,7 @@ async function creategroup(event){
         selectedOptions
 
     }
-        const createdgroup=await axios.post('http://localhost:2000/group/addgroup',obj,{ headers: { "Authorization": token } })
+        const createdgroup=await axios.post('http://54.196.61.25:2000/group/addgroup',obj,{ headers: { "Authorization": token } })
        
         showgrouponscreen([createdgroup.data.groupdata]);
       
@@ -223,10 +397,10 @@ async function creategroup(event){
 
 window.addEventListener('DOMContentLoaded', async()=>{
     try{
-        // const userdata=await axios.get('http://localhost:2000/user/getusers',{ headers: { "Authorization": token } });
+        // const userdata=await axios.get('http://54.196.61.25:2000/user/getusers',{ headers: { "Authorization": token } });
         // console.log(userdata);
         // showuseronscreen(userdata.data);
-        const groupdata=await axios.get('http://localhost:2000/usergroups/getgroups',{ headers: { "Authorization": token } });
+        const groupdata=await axios.get('http://54.196.61.25:2000/usergroups/getgroups',{ headers: { "Authorization": token } });
        // console.log(groupdata);
        
         showgrouponscreen(groupdata.data);
@@ -361,8 +535,8 @@ async function showdata(row){
   document.getElementById('listmessages').innerHTML=''
   document.getElementById('groupcarddata').style.display = "block";
   const id= row.cells[0].innerHTML;
-  const messages=await axios.get(`http://localhost:2000/chat/getmessages/${id}`,{ headers: { "Authorization": token } })
- // console.log(messages)
+  const messages=await axios.get(`http://54.196.61.25:2000/chat/getmessages/${id}`,{ headers: { "Authorization": token } })
+  console.log(messages)
  
  showmessageonscreen(messages.data.message);
  
@@ -379,13 +553,13 @@ async function showdata(row){
 
 function removegroup(id){
 
-  axios.get(`http://localhost:2000/usergroups/deletegroup/${id}`,{ headers: { "Authorization": token } });
+  axios.get(`http://54.196.61.25:2000/usergroups/deletegroup/${id}`,{ headers: { "Authorization": token } });
 }
 
 async function showgroupusers(id){
   // document.getElementById('namegroup').innerHTML=`${id}`;
   localStorage.removeItem('memberstogroup')
- const groupinfodata=await axios.get(`http://localhost:2000/group/data/${id}`,{ headers: { "Authorization": token } }) 
+ const groupinfodata=await axios.get(`http://54.196.61.25:2000/group/data/${id}`,{ headers: { "Authorization": token } }) 
  document.getElementById('namegroup').innerHTML=groupinfodata.data.group.name;
 // console.log(groupinfodata)
  showuseronscreen(groupinfodata.data.userdata,groupinfodata.data.admin,groupinfodata.data.userid)
@@ -394,7 +568,7 @@ async function showgroupusers(id){
 async function makeadmin(row){
   const groupid=localStorage.getItem('groupid');
   const id=row.cells[0].innerHTML;
-  axios.post(`http://localhost:2000/admin/makeadmin`,{groupid:groupid,userid:id})
+  axios.post(`http://54.196.61.25:2000/admin/makeadmin`,{groupid:groupid,userid:id})
   row.cells[2].innerHTML='<button type="button" class="btn btn-sm btn-danger" onclick="removeuser(this.parentNode.parentNode)">Remove</button>Admin';
 }
 async function removeuser(row){
@@ -402,7 +576,7 @@ async function removeuser(row){
   const groupid=localStorage.getItem('groupid');
   const id=row.cells[0].innerHTML;
   console.log(id)
-  axios.get(`http://localhost:2000/usergroups/deleteuser?groupid=${groupid}&userid=${id}`) 
+  axios.get(`http://54.196.61.25:2000/usergroups/deleteuser?groupid=${groupid}&userid=${id}`) 
 }
 
 async function addmembers(){
@@ -417,7 +591,7 @@ async function addmembers(){
   document.getElementById('groupmembers').getElementsByTagName('tbody')[0].innerHTML='';
   const groupid=localStorage.getItem('groupid');
   let addmemberstogroup=document.getElementById('groupmembers').getElementsByTagName('tbody')[0];
-  const usergroup= await axios.get(`http://localhost:2000/usergroups/getgroup/${groupid}`,{ headers: { "Authorization": token } });
+  const usergroup= await axios.get(`http://54.196.61.25:2000/usergroups/getgroup/${groupid}`,{ headers: { "Authorization": token } });
   console.log(usergroup)
  await usergroup.data.users.forEach((user,index)=>{
     if(user.id==usergroup.data.userid){
@@ -459,7 +633,7 @@ document.getElementById('adduserstogroup').addEventListener('click',async()=>{
     selectedOptions
 
 }
-    const createdgroup=await axios.post('http://localhost:2000/group/addmembers',obj,{ headers: { "Authorization": token } })
+    const createdgroup=await axios.post('http://54.196.61.25:2000/group/addmembers',obj,{ headers: { "Authorization": token } })
     showgroupusers(groupid);
 })
 let myTimer
@@ -481,7 +655,7 @@ input.addEventListener('focus',async()=>{
           document.getElementById('groupmembers').getElementsByTagName('tbody')[0].innerHTML='';
           const groupid=localStorage.getItem('groupid');
           let addmemberstogroup=document.getElementById('groupmembers').getElementsByTagName('tbody')[0];
-          const usergroup= await axios.get(`http://localhost:2000/usergroups/getsearchdata?groupid=${groupid}&search=${searchitem}`,{ headers: { "Authorization": token } });
+          const usergroup= await axios.get(`http://54.196.61.25:2000/usergroups/getsearchdata?groupid=${groupid}&search=${searchitem}`,{ headers: { "Authorization": token } });
           console.log(usergroup)
          await usergroup.data.users.forEach((user,index)=>{
             if(user.id==usergroup.data.userid){
@@ -525,7 +699,7 @@ async function showmembers(){
     document.getElementById('members').innerHTML='';
     let selectedbox=document.getElementById('members');
     console.log(selectedbox)
-    const userdata=await axios.get('http://localhost:2000/user/getusers',{ headers: { "Authorization": token } });
+    const userdata=await axios.get('http://54.196.61.25:2000/user/getusers',{ headers: { "Authorization": token } });
     userdata.data.forEach(user => {
       console.log(user);
         let option=`<option value="${user.id}">${user.username}</option>`

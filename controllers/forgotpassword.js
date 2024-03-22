@@ -119,5 +119,3 @@ exports.updatepassword = (req, res) => {
     }
 
 }
-
-
