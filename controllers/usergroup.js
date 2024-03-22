@@ -111,9 +111,9 @@ exports.deleteUserData=async (req,res,next)=>{
     const group=   await Group.findOne({where:{id:groupId}});
     let members=JSON.parse(group.members)
     let index=await members.indexOf(req.user.id);
-    if (index > -1) { 
-        members.splice(index, 1); 
-      }
+    
+        await  members.splice(index, 1); 
+      
       await group.update({members:JSON.stringify(members)});
 console.log(members)
    // await userGroup.destroy({where:{userId:userID}});
